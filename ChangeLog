@@ -1,3 +1,9 @@
+2004-07-22  Mathias Jansson  <mj@pfy.nu>
+
+	- 0.02
+
+	* Link.pm: receive buffer now 4x send_size data.
+
 2004-07-13  Mathias Jansson  <mj@pfy.nu>
 
 	* Changed module name.

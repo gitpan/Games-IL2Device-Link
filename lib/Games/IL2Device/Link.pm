@@ -6,7 +6,7 @@ use IO::Socket qw(:DEFAULT :crlf);
 use Carp;
 
 use vars qw($VERSION);
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 our %EXPORT_TAGS = ( 'all' => [ qw(
 ) ] );
@@ -108,8 +108,8 @@ sub _send {
   my $bs = 0;
   
   if ( defined( $self->{SOCK} ) ) {
-    $bs = $self->{SOCK}->print("$self->{PACKET}$CRLF") or 
-      warn "_send() failed: $!";
+    $bs = $self->{SOCK}->print("$self->{PACKET}$CRLF");
+    warn "_send() failed to send data: $!" if $bs <= 0;
     print "_send(): sent; $self->{PACKET}\n" if $self->{DEBUG} && $bs;
   } else {
     carp "_send(): No socket defined, are you connected?";
@@ -122,7 +122,7 @@ sub _send {
 sub _receive {
   my $self = shift;
   local $/ = $LF;
-  my $recv_size = ( length(scalar "$self->{PACKET}$CRLF") * 2);
+  my $recv_size = ( length(scalar "$self->{PACKET}$CRLF") * 4);
   my $buffer = undef;
   $self->{DATA} = undef;
   
@@ -152,8 +152,6 @@ sub _receive {
   }
   print "_receive(): got: $self->{DATA}\n" if $self->{DEBUG};
 
-  warn "_receive(): WARNING read short: ". length($buffer)
-    if length($buffer) <= 0;
   return $self->{DATA};
 }
 
@@ -188,8 +186,7 @@ sub createsetpacket {
 sub set {
   my $self = shift;
   my $packet = $self->createsetpacket(@_);
-  my $result = $self->_send($packet) or
-    warn "set(): failed to send data: $!";
+  my $result = $self->_send($packet);
   return $result;
 }
 
@@ -205,11 +202,9 @@ sub get {
     if ( defined( $data ) ) {
       $self->parsedata();
     } else {
-      warn "get(): failed to read data: $!";
       return 0;
     }
   } else {
-    warn "get(): failed to send data: $!";
     return 0;
   }
   return 1;
@@ -303,7 +298,7 @@ order you called each object.
 
 =head1 AUTHOR
 
-Mathias Jansson <mj@pfy.nu>
+Mathias Jansson <matja[at]cpan.org>
 
 =head1 COPYRIGHT
 
@@ -315,6 +310,6 @@ Copyright (C) 2004 Mathias Jansson
 
 =head1 SEE ALSO
 
-L<Games::IL2Device::Constants> L<perl(1)>.
+L<Games::IL2Device::Constants> L<perl>(1).
 
 =cut

@@ -1,9 +1,9 @@
-# $Id: Constants.pm,v 1.4 2004/07/13 16:21:44 mj Exp $
+# $Id: Constants.pm,v 1.6 2004/07/22 10:12:20 mj Exp $
 
 package Games::IL2Device::Constants;
 use strict;
 use warnings;
-
+use Carp;
 use vars qw( %KEYS );
 
 %KEYS = (
@@ -240,7 +240,7 @@ sub import {
   }
 
   foreach my $const ( @ext ) {
-    warn __PACKAGE__, ": WARNING '$const' is not defined."
+    carp __PACKAGE__, ": WARNING '$const' is not defined."
       unless exists $KEYS{$const};
     *{"${pkg}::$const"} = sub { $KEYS{$const} };
   }
@@ -346,7 +346,7 @@ MAGNETO_NEXT
 
 =head1 AUTHOR
 
-Mathias Jansson <mj@pfy.nu>
+Mathias Jansson <matja[at]cpan.org>
 
 =head1 COPYRIGHT
 
@@ -358,6 +358,6 @@ Copyright (C) 2004 Mathias Jansson
 
 =head1 SEE ALSO
 
-L<Games::IL2Device::Link> L<perl(1)>.
+L<Games::IL2Device::Link> L<perl>(1).
 
 =cut
